@@ -4,6 +4,7 @@ from custom_json_provider import CustomJsonProvider
 from data.users import lookup_user
 from endpoints import (
     do_follow,
+    do_unfollow,
     get_bloom,
     hashtag,
     home_timeline,
