@@ -39,6 +39,7 @@ const createBloom = (template, bloom) => {
   bloomTime.textContent = _formatTimestamp(bloom.sent_timestamp);
   bloomTimeLink.setAttribute("href", `/bloom/${bloom.id}`);
   rebloomCount.textContent = bloom.rebloom_count;
+  rebloomCount.parentElement.hidden = Number(bloom.rebloom_count) === 0;
   bloomContent.replaceChildren(
     ...bloomParser.parseFromString(_formatHashtags(bloom.content), "text/html")
       .body.childNodes
