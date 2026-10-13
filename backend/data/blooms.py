@@ -55,14 +55,27 @@ def get_blooms_for_user(
         limit_clause = make_limit_clause(limit, kwargs)
 
         cur.execute(
-            f"""SELECT
-              blooms.id, users.username, content, send_timestamp 
-            FROM
-              blooms INNER JOIN users ON users.id = blooms.sender_id      
+            f"""
+            SELECT
+              blooms.id,
+              users.username,
+              blooms.content,
+              blooms.send_timestamp,
+              COUNT(reblooms.id) AS rebloom_count
+            FROM blooms
+            INNER JOIN users
+              ON users.id = blooms.sender_id
+            LEFT JOIN reblooms
+              ON reblooms.bloom_id = blooms.id
             WHERE
-              username = %(sender_username)s
+              users.username = %(sender_username)s
               {before_clause}
-            ORDER BY send_timestamp DESC
+            GROUP BY
+              blooms.id,
+              users.username,
+              blooms.content,
+              blooms.send_timestamp
+            ORDER BY blooms.send_timestamp DESC
             {limit_clause}
             """,
             kwargs,
@@ -70,8 +83,7 @@ def get_blooms_for_user(
         rows = cur.fetchall()
         blooms = []
         for row in rows:
-            bloom_id, sender_username, content, timestamp = row
-            rebloom_count = get_rebloom_count(bloom_id)
+            bloom_id, sender_username, content, timestamp, rebloom_count = row
             
             blooms.append(
                 Bloom(
