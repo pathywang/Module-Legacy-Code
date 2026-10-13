@@ -75,4 +75,16 @@ async function handleFollow(event) {
   await apiService.getWhoToFollow();
 }
 
+async function handleUnfollow(event) {
+  const button = event.target;
+  const username = button.getAttribute("data-username");
+
+  if (!username) return;
+
+  await apiService.unfollowUser(username);
+
+  await apiService.getWhoToFollow();
+}
+
+
 export {createProfile, handleFollow};
